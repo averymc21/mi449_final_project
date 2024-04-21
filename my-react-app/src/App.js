@@ -1,15 +1,14 @@
 import React from 'react';
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import Weather from './weather';
-import './weather.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Weather App</h1>
+    <div className="container-fluid">
+      <header className="bg-primary text-white text-center p-4">
+        <h1 className="display-4">Weather App</h1>
       </header>
-      <main className="App-main">
+      <main className="p-4">
         <Weather />
       </main>
     </div>
