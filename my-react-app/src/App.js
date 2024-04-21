@@ -15,7 +15,7 @@ function App() {
           />
         <h2>Your Local Weather Forecast</h2>
       </header>
-      <main className="p-4 d-flex flex-column align-items-center">
+      <main className="p-4">
         <Weather />
       </main>
     </div>
