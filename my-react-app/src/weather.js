@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { WiCloud, WiDaySunny, WiRain, WiSnow, WiFog, WiThunderstorm, WiShowers } from 'react-icons/wi';
+import './weather.css';
 
 function Weather() {
     const [city, setCity] = useState('');
@@ -60,7 +61,7 @@ function Weather() {
             setWeatherData(data);
 
             // Insert real-time weather data into Supabase table
-            await supabase.from('weather_data').insert([
+            await supabase.from('weatherData').insert([
                 {
                     city_name: data.name,
                     country: data.sys.country,
@@ -82,6 +83,12 @@ function Weather() {
 
     return (
         <div className="d-flex flex-column justify-content-center align-items-center min-vh-100">
+            <img 
+            src="/logo.png" 
+            alt="Weather Icon" 
+            className="mb-3 position-absolute" 
+            style={{ width: '300px', height: 'auto', top: '300px' }}   
+        />
             <div className="weather-input text-center">
                 <input
                     type="text"
