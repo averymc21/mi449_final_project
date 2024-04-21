@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
 import { WiCloud, WiDaySunny, WiRain, WiSnow, WiFog, WiThunderstorm, WiShowers } from 'react-icons/wi';
 import './weather.css';
 
@@ -8,11 +7,6 @@ function Weather() {
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    // Initialize Supabase client
-    const supabaseUrl = 'https://dgvzouuaqkqjqbcxjmgp.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRndnpvdXVhcWtxanFiY3hqbWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM3MTA1MTcsImV4cCI6MjAyOTI4NjUxN30.LM9MDJvkwm0wd_Dxt220waXw6zvtxlU1qIMEwzOYFws';
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const weatherIcons = {
         Clear: <WiDaySunny size={50} />,
@@ -23,26 +17,6 @@ function Weather() {
         Thunderstorm: <WiThunderstorm size={50} />,
         Drizzle: <WiShowers size={50} />,
     };
-
-    const fetchSupabaseData = useCallback(async () => {
-        try {
-            const { data, error } = await supabase
-                .from('weather_data')
-                .select('*');
-
-            if (error) {
-                throw error;
-            }
-
-            setWeatherData(data);
-        } catch (error) {
-            console.error('Error fetching data from Supabase:', error.message);
-        }
-    }, [supabase]);
-
-    useEffect(() => {
-        fetchSupabaseData();
-    }, [fetchSupabaseData]);
 
     const fetchWeather = async () => {
         setLoading(true);
@@ -59,21 +33,6 @@ function Weather() {
 
             const data = await response.json();
             setWeatherData(data);
-
-            // Insert real-time weather data into Supabase table
-            await supabase.from('weatherData').insert([
-                {
-                    city_name: data.name,
-                    country: data.sys.country,
-                    latitude: data.coord.lat,
-                    longitude: data.coord.lon,
-                    temperature: data.main.temp,
-                    weather_description: data.weather[0].main,
-                    humidity: data.main.humidity,
-                    wind_speed: data.wind.speed,
-                },
-            ]);
-
         } catch (err) {
             setError(err.message);
         } finally {
@@ -84,11 +43,11 @@ function Weather() {
     return (
         <div className="d-flex flex-column justify-content-center align-items-center min-vh-100">
             <img 
-            src="/logo.png" 
-            alt="Weather Icon" 
-            className="mb-3 position-absolute" 
-            style={{ width: '300px', height: 'auto', top: '300px' }}   
-        />
+                src="/logo.png" 
+                alt="Weather Icon" 
+                className="mb-3 position-absolute" 
+                style={{ width: '300px', height: 'auto', top: '300px' }}   
+            />
             <div className="weather-input text-center">
                 <input
                     type="text"
@@ -117,23 +76,23 @@ function Weather() {
                     <div className="row justify-content-center align-items-center">
                         <div className="col-md-3">
                             <div className="weather-detail">
-                                {weatherIcons[weatherData.weather[0].main] || <WiDaySunny size={50} />}
-                                <p>{weatherData.weather[0].main}</p>
+                                {weatherIcons[weatherData.weather[0]?.main] || <WiDaySunny size={50} />}
+                                <p>{weatherData.weather[0]?.main}</p>
                             </div>
                         </div>
                         <div className="col-md-3">
                             <div className="weather-detail">
-                                <p>Temperature: {weatherData.main.temp}°F</p>
+                                <p>Temperature: {weatherData.main?.temp}°F</p>
                             </div>
                         </div>
                         <div className="col-md-3">
                             <div className="weather-detail">
-                                <p>Humidity: {weatherData.main.humidity}%</p>
+                                <p>Humidity: {weatherData.main?.humidity}%</p>
                             </div>
                         </div>
                         <div className="col-md-3">
                             <div className="weather-detail">
-                                <p>Wind Speed: {weatherData.wind.speed} mph</p>
+                                <p>Wind Speed: {weatherData.wind?.speed} mph</p>
                             </div>
                         </div>
                     </div>
