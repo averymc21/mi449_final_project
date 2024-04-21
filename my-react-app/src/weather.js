@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { WiCloud, WiDaySunny, WiRain, WiSnow, WiFog, WiThunderstorm, WiShowers } from 'react-icons/wi';
 
 function Weather() {
     const [city, setCity] = useState('');
@@ -11,6 +12,16 @@ function Weather() {
     const supabaseUrl = 'https://dgvzouuaqkqjqbcxjmgp.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRndnpvdXVhcWtxanFiY3hqbWdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM3MTA1MTcsImV4cCI6MjAyOTI4NjUxN30.LM9MDJvkwm0wd_Dxt220waXw6zvtxlU1qIMEwzOYFws';
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const weatherIcons = {
+        Clear: <WiDaySunny size={50} />,
+        Clouds: <WiCloud size={50} />,
+        Rain: <WiRain size={50} />,
+        Snow: <WiSnow size={50} />,
+        Fog: <WiFog size={50} />,
+        Thunderstorm: <WiThunderstorm size={50} />,
+        Drizzle: <WiShowers size={50} />,
+    };
 
     const fetchSupabaseData = useCallback(async () => {
         try {
@@ -36,7 +47,7 @@ function Weather() {
         setLoading(true);
         setError(null);
 
-        const apiKey = '629bdae43dd08e0069e765912dd61328'; // Replace with your OpenWeatherMap API key
+        const apiKey = '629bdae43dd08e0069e765912dd61328';
 
         try {
             const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`);
@@ -70,29 +81,55 @@ function Weather() {
     };
 
     return (
-        <div>
+        <div className="d-flex flex-column justify-content-center align-items-center min-vh-100">
+            <div className="weather-input text-center">
+                <input
+                    type="text"
+                    value={city}
+                    placeholder="Enter city name"
+                    onChange={(e) => setCity(e.target.value)}
+                    className="form-control d-inline-block"
+                />
+                <button 
+                    onClick={fetchWeather} 
+                    disabled={!city || loading}
+                    className="btn btn-primary mt-2"
+                >
+                    See Local Weather
+                </button>
+            </div>
 
-            <input
-                type="text"
-                value={city}
-                placeholder="Enter city name"
-                onChange={(e) => setCity(e.target.value)}
-            />
-
-            <button onClick={fetchWeather} disabled={!city || loading}>
-                Fetch Weather
-            </button>
-
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
+            {loading && <p className="mt-4">Loading...</p>}
+            {error && <p className="mt-4 text-danger">{error}</p>}
 
             {weatherData && (
-                <div>
-                    <h2>Current Weather in {city}</h2>
-                    <p>Temperature: {weatherData.main.temp}°F</p>
-                    <p>Weather: {weatherData.weather[0].main}</p>
-                    <p>Humidity: {weatherData.main.humidity}%</p>
-                    <p>Wind Speed: {weatherData.wind.speed} mph</p>
+                <div className="weather-details mt-4">
+                    <div className="text-center mb-4">
+                        <h2>Current Weather in {city}</h2>
+                    </div>
+                    <div className="row justify-content-center align-items-center">
+                        <div className="col-md-3">
+                            <div className="weather-detail">
+                                {weatherIcons[weatherData.weather[0].main] || <WiDaySunny size={50} />}
+                                <p>{weatherData.weather[0].main}</p>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="weather-detail">
+                                <p>Temperature: {weatherData.main.temp}°F</p>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="weather-detail">
+                                <p>Humidity: {weatherData.main.humidity}%</p>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="weather-detail">
+                                <p>Wind Speed: {weatherData.wind.speed} mph</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
