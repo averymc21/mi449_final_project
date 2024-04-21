@@ -5,6 +5,7 @@ import './weather.css';
 function Weather() {
     const [city, setCity] = useState('');
     const [weatherData, setWeatherData] = useState(null);
+    const [uvIndex, setUvIndex] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -23,6 +24,7 @@ function Weather() {
         setError(null);
 
         const apiKey = '629bdae43dd08e0069e765912dd61328';
+        const uvApiKey = 'openuv-55lrlva1v501-io';
 
         try {
             const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`);
@@ -33,6 +35,17 @@ function Weather() {
 
             const data = await response.json();
             setWeatherData(data);
+
+            // Fetch UV index
+            const uvResponse = await fetch(`https://api.openuv.io/api/v1/uv?lat=${data.coord.lat}&lng=${data.coord.lon}`, {
+                headers: {
+                    'x-access-token': uvApiKey,
+                },
+            });
+
+            const uvData = await uvResponse.json();
+            setUvIndex(uvData.result.uv);
+
         } catch (err) {
             setError(err.message);
         } finally {
@@ -95,6 +108,9 @@ function Weather() {
                                 <p>Wind Speed: {weatherData.wind?.speed} mph</p>
                             </div>
                         </div>
+                    </div>
+                    <div className="text-center mt-4">
+                        <p>UV Index: {uvIndex}</p>
                     </div>
                 </div>
             )}
